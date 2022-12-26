@@ -1,0 +1,48 @@
+@startuml
+map goods {
+    id => int
+    name => varchar
+    amount => int
+    price => int
+    category_id => int
+}
+map categories {
+    id => int
+    name => varchar
+    subcategory => int
+}
+map clients {
+    id => int
+    name => varchar
+    address => varchar
+}
+map orders {
+    id => int
+    good_id => int
+    client_id => int
+}
+map subcategory {
+    id => int
+    name => varchar
+    category_id => int
+}
+
+categories::subcategory --* subcategory::category_id
+orders::good_id --* goods::id
+orders::client *-- clients::id
+goods::category_id *-- categories::id
+
+component comp1 [
+SELECT name, COUNT(id) AS total_orders
+FROM clients, orders
+WHERE clients.id = orders.client_id  
+GROUP BY name 
+]
+
+component comp2 [
+SELECT name, COUNT(id)
+FROM categories
+JOIN subcategory ON subcategory.category_id = categories.subcategory
+GROUP BY name
+]
+@enduml
